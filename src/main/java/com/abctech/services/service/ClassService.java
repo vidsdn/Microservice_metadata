@@ -53,9 +53,6 @@ public class ClassService {
 				.orElseThrow(() -> new ResourceNotFoundException("Batch", "Id", batchId));
 
 		Class newClass = classMapper.toClassScheduleEntity(newClassDto);
-		System.out.println(newClass);
-		System.out.println(newClass.getClassStatus());
-		System.out.println(newClass.getClassNoOfStudents());
 
 		LocalDateTime now = LocalDateTime.now();
 		Timestamp timestamp = Timestamp.valueOf(now);
