@@ -141,7 +141,7 @@ public class ClassService {
 				() -> new ResourceNotFoundException("program not found for the given programId " + programId));
 
 		programRepository.updateProgramStatus(status, programId);
-		System.out.println("program status updated for program " + programId);
+		log.info("program status updated for program {} " , programId);
 
 		List<Batch> batchesByProgram = batchRepository.findByProgramProgramId(programId);
 
@@ -151,20 +151,20 @@ public class ClassService {
 			for (int noOfBatches = 0; noOfBatches < totalNoOfBatches; noOfBatches++) {
 				Batch batch = batchesByProgram.get(noOfBatches);
 				Integer batchId = batch.getBatchId();
-				System.out.println("batch inside for loop" + batch);
+				//System.out.println("batch inside for loop" + batch);
 				// update batch
 				batchRepository.updateBatchStatus(status, batchId);
-				System.out.println("batch status updated for batch " + batchId);
+				log.info("batch status updated for batch {} " , batchId);
 				List<Class> classesByBatch = classRepository.findByBatchInClass_batchId(batch.getBatchId());
 				int totalNoOfClasses = classesByBatch.size();
 				if (totalNoOfClasses > 0) {
 					for (int noOfClasses = 0; noOfClasses < totalNoOfClasses; noOfClasses++) {
 						Class class1 = classesByBatch.get(noOfClasses);
 						Long classID = class1.getCsId();
-						System.out.println("class inside for loop" + class1);
+						//System.out.println("class inside for loop" + class1);
 						// update class
 						classRepository.updateClassStatus(status, classID);
-						System.out.println("class status updated for class " + classID);
+						log.info("class status updated for class {} " , classID);
 					}
 				}
 
@@ -179,7 +179,7 @@ public class ClassService {
         log.info("Sending Asset Promotion Event for programId {} ", programId);
         assetPromotionProducer.sendMessage(assetPromotionEvent);
         		
-		// kafkaTemplate.send("notificationTopic", new OrderPlacedEvent(order.getOrderNumber()));
+
 		
 	}
 }
