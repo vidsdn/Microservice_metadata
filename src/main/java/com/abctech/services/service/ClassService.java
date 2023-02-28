@@ -15,15 +15,20 @@ import org.springframework.util.StringUtils;
 import com.abctech.services.dto.ClassDto;
 import com.abctech.services.entity.Class;
 import com.abctech.services.entity.Program;
+import com.abctech.services.event.AssetPromotionEvent;
 import com.abctech.services.entity.Batch;
 import com.abctech.services.exception.DuplicateResourceFoundException;
 import com.abctech.services.exception.ResourceNotFoundException;
+import com.abctech.services.kafka.AssetPromotionProducer;
 import com.abctech.services.mapper.ClassMapper;
 import com.abctech.services.repository.BatchRepository;
 import com.abctech.services.repository.ClassRepository;
 import com.abctech.services.repository.ProgramRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class ClassService {
 	@Autowired
 	private ClassRepository classRepository;
@@ -36,6 +41,9 @@ public class ClassService {
 
 	@Autowired
 	private ClassMapper classMapper;
+	
+	@Autowired
+	private AssetPromotionProducer assetPromotionProducer;
 
 	public ClassDto createClass(ClassDto newClassDto) throws DuplicateResourceFoundException {
 
@@ -165,6 +173,16 @@ public class ClassService {
 
 			}
 		}
-
+		log.info("updated Event Status for programId {} ", programId);
+        
+        AssetPromotionEvent assetPromotionEvent = new AssetPromotionEvent();
+        assetPromotionEvent.setStatus(status);
+        assetPromotionEvent.setMessage("Updated status for the Assets");
+        assetPromotionEvent.setProgramId(programId);
+        log.info("Sending Asset Promotion Event for programId {} ", programId);
+        assetPromotionProducer.sendMessage(assetPromotionEvent);
+        		
+		// kafkaTemplate.send("notificationTopic", new OrderPlacedEvent(order.getOrderNumber()));
+		
 	}
 }
